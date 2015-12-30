@@ -12,8 +12,8 @@ TABLES = {}
 TABLES['users'] = (
     "CREATE TABLE `users` ("
     "  `id` int(11) NOT NULL AUTO_INCREMENT,"
-    "  `username` varchar(255) NOT NULL,"
-    "  `password` varchar(255) NOT NULL,"
+    "  `username` varchar(255) UNIQUE NOT NULL,"
+    "  `password` varchar(255) UNIQUE NOT NULL,"
     "  PRIMARY KEY (`id`)"
     ") ENGINE=InnoDB")
 
@@ -27,6 +27,7 @@ TABLES['images'] = (
     "  `user_id` int(11) NOT NULL,"
     "  PRIMARY KEY (`id`)"
     ") ENGINE=InnoDB")
+
 
 cnx = mysql.connector.connect(user=cfg.MYSQL_USER,
                               password=cfg.MYSQL_PASSWORD)
@@ -84,6 +85,26 @@ try:
                 "VALUES (%s, %s)")
     user_data = ('admin', 'secret')
     cursor.execute(add_user, user_data)
+    cnx.commit()
+except mysql.connector.Error as err:
+    print("Mysql error: {}".format(err))
+finally:
+    cursor.close()
+    cnx.close()
+
+##################################################
+# добавление индекса для resized_image_path
+##################################################
+
+cnx = mysql.connector.connect(user=cfg.MYSQL_USER,
+                              password=cfg.MYSQL_PASSWORD,
+                              database=cfg.DATABASE)
+
+cursor = cnx.cursor()
+
+try:
+    add_index = ("CREATE INDEX idx1 ON images(resized_image_path(1))")
+    cursor.execute(add_index)
     cnx.commit()
 except mysql.connector.Error as err:
     print("Mysql error: {}".format(err))

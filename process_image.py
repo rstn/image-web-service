@@ -19,8 +19,7 @@ def process_images_queue():
         cursor = cnx.cursor()
         query = ("SELECT id, original_image_path, "
                  "width, height FROM images "
-                 "WHERE TRIM(original_image_path) = ''"
-                 "OR resized_image_path IS NULL")
+                 "WHERE resized_image_path IS NULL")
 
         cursor.execute(query)
         rows = cursor.fetchall()
